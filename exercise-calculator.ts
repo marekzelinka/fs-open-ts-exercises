@@ -35,4 +35,38 @@ function calculateExercises(dailyHours: number[], target: number): Result {
   }
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+try {
+  const { target, dailyHours } = parseArguments(process.argv)
+  console.log(calculateExercises(dailyHours, target))
+} catch (error: unknown) {
+  let errorMessage = 'Something bad happend.'
+  if (error instanceof Error) {
+    errorMessage += ` Error: ${error.message}`
+  }
+  console.error(errorMessage)
+}
+
+interface Args {
+  target: number
+  dailyHours: number[]
+}
+
+function parseArguments(args: string[]): Args {
+  if (args.length < 4) throw new Error('Not enough arguments')
+
+  const [value1, ...value2] = args.slice(2)
+  const target = Number(value1)
+  if (isNaN(target)) throw new Error('Provided value `target` is not a number')
+  const dailyHours = value2.map((arg) => {
+    const h = Number(arg)
+    if (isNaN(h)) throw new Error('Provided value `value2` is not a number')
+    return h
+  })
+
+  return {
+    target,
+    dailyHours,
+  }
+}
+
+export {}
