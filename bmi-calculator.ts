@@ -8,7 +8,7 @@ type Category =
   | 'Obese (Class II)'
   | 'Obese (Class III)'
 
-function calculateBmi(height: number, weight: number): Category {
+export function calculateBmi(height: number, weight: number): Category {
   const bmi = weight / (height / 100) ** 2
 
   if (bmi < 16.0) {
