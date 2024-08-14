@@ -30,36 +30,3 @@ export function calculateBmi(height: number, weight: number): Category {
     return 'Obese (Class III)'
   }
 }
-
-try {
-  const { height, weight } = parseArguments(process.argv)
-  console.log(calculateBmi(height, weight))
-} catch (error: unknown) {
-  let errorMessage = 'Something bad happend.'
-  if (error instanceof Error) {
-    errorMessage += ` Error: ${error.message}`
-  }
-  console.error(errorMessage)
-}
-
-interface Args {
-  height: number
-  weight: number
-}
-
-function parseArguments(args: string[]): Args {
-  if (args.length < 4) throw new Error('Not enough arguments')
-  if (args.length > 4) throw new Error('Too many arguments')
-
-  const height = Number(args[2])
-  if (isNaN(height)) throw new Error('Provided value `value1` is not a number')
-  const weight = Number(args[3])
-  if (isNaN(weight)) throw new Error('Provided value `value2` is not a number')
-
-  return {
-    height,
-    weight,
-  }
-}
-
-export {}
