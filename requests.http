@@ -1,0 +1,13 @@
+GET http://localhost:3003/hello
+
+###
+GET http://localhost:3003/bmi?weight=78&height=176
+
+###
+POST http://localhost:3003/exercises
+Content-Type: application/json
+
+{
+  "daily_exercises": [7, 4, 3, 2, 2, 0, 0, 1],
+  "target": 2
+}

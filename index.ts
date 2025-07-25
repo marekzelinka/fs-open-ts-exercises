@@ -1,48 +1,48 @@
-import express from 'express'
-import { calculateBmi } from './bmi-calculator'
-import { calculateExercises } from './exercise-calculator'
+import express from "express";
+import { calculateBmi } from "./bmi-calculator.js";
+import { calculateExercises } from "./exercise-calculator.js";
 
-const app = express()
+const app = express();
 
-app.use(express.json())
+app.use(express.json());
 
-app.get('/hello', (_req, res) => {
-  res.send('Hello Full Stack!')
-})
+app.get("/hello", (_req, res) => {
+  res.send("Hello Full Stack!");
+});
 
-app.get('/bmi', (req, res) => {
-  const query = req.query
+app.get("/bmi", (req, res) => {
+  const query = req.query;
 
-  const weight = Number(query.weight)
-  const height = Number(query.height)
+  const weight = Number(query.weight);
+  const height = Number(query.height);
 
   if (isNaN(weight) || isNaN(height)) {
     res
       .status(400)
       .send({
-        error: 'malformatted parameters',
+        error: "malformatted parameters",
       })
-      .end()
-    return
+      .end();
+    return;
   }
 
-  const bmi = calculateBmi(height, weight)
+  const bmi = calculateBmi(height, weight);
 
   res.send({
     weight,
     height,
     bmi,
-  })
-})
+  });
+});
 
-app.post('/exercises', (req, res) => {
-  const { daily_exercises: dialyExercises, target } = req.body
+app.post("/exercises", (req, res) => {
+  const { daily_exercises: dialyExercises, target } = req.body;
 
   if (!target || !dialyExercises) {
     res.status(400).send({
-      error: 'parameters missing',
-    })
-    return
+      error: "parameters missing",
+    });
+    return;
   }
 
   if (
@@ -51,18 +51,18 @@ app.post('/exercises', (req, res) => {
     dialyExercises.some((value) => isNaN(Number(value)))
   ) {
     res.status(400).send({
-      error: 'malformatted parameters',
-    })
-    return
+      error: "malformatted parameters",
+    });
+    return;
   }
 
   const result = calculateExercises(
     dialyExercises.map((value) => Number(value)),
     Number(target),
-  )
+  );
 
-  res.send(result)
-})
+  res.send(result);
+});
 
-const PORT = 3003
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
+const PORT = 3003;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
