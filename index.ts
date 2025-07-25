@@ -1,4 +1,5 @@
 import express from "express";
+import * as z from "zod";
 import { calculateBmi } from "./bmi-calculator.js";
 import { calculateExercises } from "./exercise-calculator.js";
 
@@ -10,21 +11,22 @@ app.get("/hello", (_req, res) => {
   res.send("Hello Full Stack!");
 });
 
+const BmiSchema = z.object({
+  weight: z.coerce.number().gt(0),
+  height: z.coerce.number().gt(0),
+});
+
 app.get("/bmi", (req, res) => {
   const query = req.query;
 
-  const weight = Number(query.weight);
-  const height = Number(query.height);
-
-  if (isNaN(weight) || isNaN(height)) {
-    res
-      .status(400)
-      .send({
-        error: "malformatted parameters",
-      })
-      .end();
-    return;
+  const result = BmiSchema.safeParse(query);
+  if (!result.success) {
+    return res.status(400).send({
+      error: "malformatted parameters",
+    });
   }
+
+  const { weight, height } = result.data;
 
   const bmi = calculateBmi(height, weight);
 
@@ -35,33 +37,33 @@ app.get("/bmi", (req, res) => {
   });
 });
 
+const ExercisesScehma = z.object({
+  dialyExercises: z.array(z.number().gte(0)),
+  target: z.number().gte(0),
+});
+
 app.post("/exercises", (req, res) => {
   const { daily_exercises: dialyExercises, target } = req.body;
 
-  if (!target || !dialyExercises) {
-    res.status(400).send({
+  if (target === undefined || dialyExercises === undefined) {
+    return res.status(400).send({
       error: "parameters missing",
     });
-    return;
   }
 
-  if (
-    isNaN(Number(target)) ||
-    !Array.isArray(dialyExercises) ||
-    dialyExercises.some((value) => isNaN(Number(value)))
-  ) {
-    res.status(400).send({
+  const result = ExercisesScehma.safeParse({ dialyExercises, target });
+  if (!result.success) {
+    return res.status(400).send({
       error: "malformatted parameters",
     });
-    return;
   }
 
-  const result = calculateExercises(
-    dialyExercises.map((value) => Number(value)),
-    Number(target),
+  const exercises = calculateExercises(
+    result.data.dialyExercises,
+    result.data.target,
   );
 
-  res.send(result);
+  res.send(exercises);
 });
 
 const PORT = 3003;
